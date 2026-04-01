@@ -5,15 +5,17 @@ import CodeEditor from '../components/editor/CodeEditor';
 import RoastResult from '../components/features/RoastResult';
 import ModeToggle from '../components/controls/ModeToggle';
 import ToneSlider from '../components/controls/ToneSlider';
-import { roastCode } from '../services/ai';
+import { roastCode } from '../lib/gemini';
+import { DEFAULT_CODE } from '../constants/editor';
 
 const Home = () => {
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState(DEFAULT_CODE.javascript);
   const [language, setLanguage] = useState('javascript');
   const [isRoasting, setIsRoasting] = useState(false);
   const [roastResult, setRoastResult] = useState('');
   const [mode, setMode] = useState('savage');
   const [tone, setTone] = useState(70);
+  const [error, setError] = useState('');
 
   const handleClear = () => {
     setCode('');
@@ -21,28 +23,22 @@ const Home = () => {
   };
 
   const handleRoast = async () => {
-    if (!code.trim()) return;
+    if (!code.trim()) {
+      setError("Paste some code first, newbie!");
+      return;
+    }
 
     setIsRoasting(true);
-    setRoastResult(''); // Reset result
+    setRoastResult('');
+    setError('');
 
     try {
-      const stream = await roastCode({
-        code,
-        language,
-        mode,
-        tone
-      });
-
-      let fullText = '';
-      for await (const chunk of stream) {
-        const chunkText = chunk.text();
-        fullText += chunkText;
-        setRoastResult(fullText);
-      }
-    } catch (error) {
-      console.error("Roasting failed:", error);
-      setRoastResult("Ugh, something went wrong. Even the AI couldn't handle your code.");
+      // lib/gemini.js returns the full text directly
+      const result = await roastCode(code, language, mode, tone);
+      setRoastResult(result);
+    } catch (err) {
+      console.error("Roasting failed:", err);
+      setError(err.message || "Ugh, something went wrong. Even the AI couldn't handle your code.");
     } finally {
       setIsRoasting(false);
     }
@@ -84,10 +80,7 @@ const Home = () => {
           onClear={handleClear}
         />
 
-        {/* Display The Roast */}
-        <div className="mt-8">
-          <RoastResult result={roastResult} onCopy={handleCopy} isRoasting={isRoasting} />
-        </div>
+        {/* Result moved to RightPanel */}
       </div>
     </div>
   );
@@ -130,6 +123,22 @@ const Home = () => {
               </>
             )}
           </button>
+          
+          {(roastResult || isRoasting || error) && (
+            <div className="mt-6 border-t border-slate-800 pt-6">
+              {error ? (
+                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3">
+                  <ShieldAlert size={18} className="text-red-500 mt-1 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-bold text-red-500 uppercase">System Error</p>
+                    <p className="text-xs text-red-400 mt-1 leading-relaxed">{error}</p>
+                  </div>
+                </div>
+              ) : (
+                <RoastResult result={roastResult} onCopy={handleCopy} isRoasting={isRoasting} mode={mode} />
+              )}
+            </div>
+          )}
         </div>
       </div>
 

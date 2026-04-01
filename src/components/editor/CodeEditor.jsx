@@ -1,60 +1,11 @@
 import React from 'react';
 import Editor from '@monaco-editor/react';
 import { Trash2, ChevronDown, Code2 } from 'lucide-react';
+import { DEFAULT_CODE, SUPPORTED_LANGUAGES } from '../../constants/editor';
 
 const CodeEditor = ({ value, onChange, language = 'javascript', onLanguageChange, onClear }) => {
-  const languages = [
-    { value: 'javascript', label: 'JavaScript' },
-    { value: 'typescript', label: 'TypeScript' },
-    { value: 'python', label: 'Python' },
-    { value: 'java', label: 'Java' },
-    { value: 'cpp', label: 'C++' },
-    { value: 'go', label: 'Go' },
-  ];
-
-  const defaultCode = {
-    javascript: `// Paste your nasty spaghetti code here...
-function calculateTotal(price, tax) {
-    const total = price + (price * tax);
-    console.log("The total is: " + total);
-    return total;
-}
-
-calculateTotal(100, 0.1);`,
-    typescript: `// Roast your typed garbage...
-interface User {
-  id: number;
-  name: string;
-}
-
-const user: User = { id: 1, name: "John" };
-console.log(user);`,
-    python: `# Spaghetti in Python? 
-def greet(name):
-    print(f"Hello, {name}!")
-
-greet("Victim")`,
-    java: `// Boilerplate hell...
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("Roast me!");
-    }
-}`,
-    cpp: `// Segfault waiting to happen...
-#include <iostream>
-
-int main() {
-    std::cout << "Roast me!" << std::endl;
-    return 0;
-}`,
-    go: `// Gophers like it roasted...
-package main
-import "fmt"
-
-func main() {
-    fmt.Println("Roast me!")
-}`,
-  };
+  const languages = SUPPORTED_LANGUAGES;
+  const defaultCode = DEFAULT_CODE;
 
   const editorValue = value !== undefined && value !== null ? value : (defaultCode[language] || defaultCode.javascript);
 

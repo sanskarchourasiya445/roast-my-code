@@ -3,12 +3,16 @@ import MainLayout from '../components/layout/MainLayout';
 import { Terminal, Code2, ShieldAlert, Zap, TrendingDown, Loader2 } from 'lucide-react';
 import CodeEditor from '../components/editor/CodeEditor';
 import RoastResult from '../components/features/RoastResult';
+import ModeToggle from '../components/controls/ModeToggle';
+import ToneSlider from '../components/controls/ToneSlider';
 
 const Home = () => {
   const [code, setCode] = useState('');
   const [language, setLanguage] = useState('javascript');
   const [isRoasting, setIsRoasting] = useState(false);
   const [roastResult, setRoastResult] = useState(null);
+  const [mode, setMode] = useState('savage');
+  const [tone, setTone] = useState(70);
 
   const mockRoastsByLanguage = {
     javascript: [
@@ -84,9 +88,15 @@ const Home = () => {
       </div>
 
       <div className="flex-1 flex flex-col min-h-[500px]">
-        <div className="flex items-center gap-3 mb-4">
-          <Terminal size={20} className="text-orange-500" />
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-400">Code Submission</h2>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <Terminal size={20} className="text-orange-500" />
+              <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-400">Code Submission</h2>
+            </div>
+            <ModeToggle mode={mode} onModeChange={setMode} />
+          </div>
+          <ToneSlider tone={tone} onToneChange={setTone} />
         </div>
         
         <CodeEditor 

@@ -5,66 +5,47 @@ import CodeEditor from '../components/editor/CodeEditor';
 import RoastResult from '../components/features/RoastResult';
 import ModeToggle from '../components/controls/ModeToggle';
 import ToneSlider from '../components/controls/ToneSlider';
+import { roastCode } from '../services/ai';
 
 const Home = () => {
   const [code, setCode] = useState('');
   const [language, setLanguage] = useState('javascript');
   const [isRoasting, setIsRoasting] = useState(false);
-  const [roastResult, setRoastResult] = useState(null);
+  const [roastResult, setRoastResult] = useState('');
   const [mode, setMode] = useState('savage');
   const [tone, setTone] = useState(70);
 
-  const mockRoastsByLanguage = {
-    javascript: [
-      "This O(n^3) complexity is basically a DDoS attack on your own infrastructure. Have you considered a career in management?",
-      "Your callback hell has more layers than an onion, and it's making me cry just as much.",
-      "The way you handle promises makes me think you have serious commitment issues."
-    ],
-    typescript: [
-      "Adding 'any' to every type doesn't make it TypeScript, it makes it a cry for help.",
-      "Your interfaces are so loose, a truck could drive through them. What exactly are you protecting against?",
-      "Type safety? More like type suggestion. This code belongs in a museum of 'How Not To Typed State'."
-    ],
-    python: [
-      "Your indentation is the only thing providing structure to your life, and it's still inconsistent.",
-      "List comprehensions are not intended to replace entire libraries. Please, think of the readability.",
-      "This Python code is so slow, it should come with a calendar instead of a debugger."
-    ],
-    java: [
-      "The amount of boilerplate here could construct a skyscraper. Why write 100 lines for a 'Hello World'?",
-      "Your class hierarchy is so deep, I'm getting decompression sickness just reading it.",
-      "Object-oriented? More like Abstract-Factory-Strategy-Decorator-Hell-Oriented."
-    ],
-    cpp: [
-      "This memory leak is so massive, it’s basically an underwater volcano. Your heap is a disaster zone.",
-      "I see a segfault in your future. Probably in the next 0.5 seconds of runtime.",
-      "Your pointer arithmetic is how accidental nuclear launches happen. Please stop."
-    ],
-    go: [
-      "If err != nil { return err } ... yes, we get it. We all get it. You write Go.",
-      "Goroutine leaks? In this economy? Your concurrency model is basically a race condition in a suit.",
-      "This code is as sterile as an operating room, and just as painful to stay in for too long."
-    ],
-  };
-
   const handleClear = () => {
     setCode('');
-    setRoastResult(null);
+    setRoastResult('');
   };
 
-  const handleRoast = () => {
+  const handleRoast = async () => {
     if (!code.trim()) return;
 
     setIsRoasting(true);
-    setRoastResult(null);
+    setRoastResult(''); // Reset result
 
-    // Simulate AI "Processing"
-    setTimeout(() => {
-      const languageRoasts = mockRoastsByLanguage[language] || mockRoastsByLanguage.javascript;
-      const randomRoast = languageRoasts[Math.floor(Math.random() * languageRoasts.length)];
-      setRoastResult(randomRoast);
+    try {
+      const stream = await roastCode({
+        code,
+        language,
+        mode,
+        tone
+      });
+
+      let fullText = '';
+      for await (const chunk of stream) {
+        const chunkText = chunk.text();
+        fullText += chunkText;
+        setRoastResult(fullText);
+      }
+    } catch (error) {
+      console.error("Roasting failed:", error);
+      setRoastResult("Ugh, something went wrong. Even the AI couldn't handle your code.");
+    } finally {
       setIsRoasting(false);
-    }, 2000);
+    }
   };
 
   const handleCopy = () => {
@@ -88,15 +69,11 @@ const Home = () => {
       </div>
 
       <div className="flex-1 flex flex-col min-h-[500px]">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-3">
-              <Terminal size={20} className="text-orange-500" />
-              <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-400">Code Submission</h2>
-            </div>
-            <ModeToggle mode={mode} onModeChange={setMode} />
+        <div className="flex flex-col gap-3 mb-6">
+          <div className="flex items-center gap-3">
+            <Terminal size={20} className="text-orange-500" />
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-400">Code Submission</h2>
           </div>
-          <ToneSlider tone={tone} onToneChange={setTone} />
         </div>
         
         <CodeEditor 
@@ -107,34 +84,55 @@ const Home = () => {
           onClear={handleClear}
         />
 
-        <div className="mt-6">
-          <button 
-            onClick={handleRoast}
-            disabled={isRoasting || !code.trim()}
-            className="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-orange-600 via-orange-500 to-amber-500 text-white font-bold rounded-xl shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed group relative overflow-hidden"
-          >
-            {isRoasting ? (
-              <>
-                <Loader2 size={18} className="animate-spin text-white" />
-                <span>Generating Burns...</span>
-              </>
-            ) : (
-              <>
-                <span>Roast This Snippet</span>
-                <Zap size={18} fill="currentColor" className="group-hover:animate-bounce" />
-              </>
-            )}
-          </button>
-        </div>
-
         {/* Display The Roast */}
-        <RoastResult result={roastResult} onCopy={handleCopy} />
+        <div className="mt-8">
+          <RoastResult result={roastResult} onCopy={handleCopy} isRoasting={isRoasting} />
+        </div>
       </div>
     </div>
   );
 
   const RightPanel = (
     <div className="space-y-6">
+      {/* Roast Controls & CTA */}
+      <div className="glass-panel p-6 bg-slate-900 border-slate-800 shadow-2xl relative overflow-hidden group/controls">
+        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover/controls:opacity-20 transition-opacity">
+          <Zap size={80} className="text-orange-500" />
+        </div>
+        
+        <h3 className="text-sm font-bold text-slate-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+          <Zap size={16} className="text-orange-500" />
+          Roast Configuration
+        </h3>
+
+        <div className="space-y-6">
+          <ModeToggle mode={mode} onModeChange={setMode} />
+          <ToneSlider tone={tone} onToneChange={setTone} />
+          
+          <button 
+            onClick={handleRoast}
+            disabled={isRoasting || !code.trim()}
+            className="w-full py-5 bg-gradient-to-r from-orange-600 via-orange-500 to-amber-500 text-white font-black rounded-xl shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:shadow-[0_0_30px_rgba(249,115,22,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed group/btn relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity" />
+            
+            {isRoasting ? (
+              <>
+                <Loader2 size={24} className="animate-spin text-white" />
+                <span className="text-lg uppercase tracking-tight">Generating Burns...</span>
+              </>
+            ) : (
+              <>
+                <span className="text-lg uppercase tracking-tight">🔥 Roast It!</span>
+                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover/btn:rotate-12 transition-transform">
+                  <Zap size={18} fill="currentColor" />
+                </div>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
       <div className="glass-panel p-5 bg-slate-900 border-slate-800 shadow-xl">
         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
           <ShieldAlert size={16} className="text-red-500" />

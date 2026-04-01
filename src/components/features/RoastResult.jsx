@@ -1,8 +1,8 @@
 import React from 'react';
 import { Flame, AlertTriangle, Ghost, Terminal, Copy, Share2 } from 'lucide-react';
 
-export const RoastResult = ({ result, onCopy }) => {
-  if (!result) return null;
+export const RoastResult = ({ result, onCopy, isRoasting }) => {
+  if (!result && !isRoasting) return null;
 
   return (
     <div className="mt-8 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -24,7 +24,10 @@ export const RoastResult = ({ result, onCopy }) => {
 
           <div className="p-6 rounded-xl bg-slate-950/80 border border-orange-500/10 font-mono text-sm leading-relaxed text-slate-300">
             <span className="text-orange-500 font-bold block mb-2">{">"} VERDICT_OUTPUT:</span>
-            <p className="italic">"{result}"</p>
+            <div className="flex flex-wrap items-center gap-x-1 transition-all duration-300">
+                <p className="whitespace-pre-wrap">{result}</p>
+                {isRoasting && <span className="w-2 h-4 bg-orange-500 animate-pulse ml-1 inline-block" />}
+            </div>
           </div>
 
           <div className="flex items-center justify-between pt-4 border-t border-slate-800">

@@ -38,19 +38,19 @@ const ShareButton = ({ roast, language, mode = 'savage' }) => {
     <>
       <button 
         onClick={handleShare}
-        className="group relative flex items-center gap-3 px-8 py-4 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-orange-500/50 transition-all duration-500 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),0_0_20px_rgba(249,115,22,0.1)] active:scale-95 active:duration-100"
+        className="group relative flex items-center gap-3 px-8 py-4 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-violet-500/50 transition-all duration-500 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),0_0_20px_rgba(139,92,246,0.1)] active:scale-95 active:duration-100"
       >
         {/* Animated Background Overlay */}
-        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-violet-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
         
-        <Download size={18} className="text-orange-500 group-hover:scale-110 group-active:translate-y-1 transition-all duration-300 relative z-10" />
+        <Download size={18} className="text-violet-400 group-hover:scale-110 group-active:translate-y-1 transition-all duration-300 relative z-10" />
         <span className="text-[11px] font-black text-slate-400 group-hover:text-slate-100 uppercase tracking-[0.3em] transition-colors relative z-10">
           Share My Shame
         </span>
         
         <div className="absolute top-1 right-1">
-          <Sparkles size={10} className="text-orange-500/0 group-hover:text-orange-500/40 transition-all duration-700 delay-100" />
+          <Sparkles size={10} className="text-violet-500/0 group-hover:text-violet-500/40 transition-all duration-700 delay-100" />
         </div>
       </button>
 
@@ -63,19 +63,19 @@ const ShareButton = ({ roast, language, mode = 'savage' }) => {
         >
           {/* Dynamic Accents */}
           <div className={`absolute top-0 right-0 w-[400px] h-[400px] blur-[150px] opacity-20 ${
-            mode === 'savage' ? 'bg-orange-600' : 'bg-blue-600'
+            mode === 'savage' ? 'bg-rose-600' : 'bg-cyan-600'
           }`} />
-          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-600 blur-[180px] opacity-[0.05]" />
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-violet-600 blur-[180px] opacity-[0.05]" />
 
           {/* Header */}
           <div className="flex items-center justify-between relative z-10">
              <div className="flex items-center gap-6">
-                <div className="w-20 h-20 rounded-[2rem] bg-orange-500 flex items-center justify-center shadow-[0_20px_50px_rgba(249,115,22,0.4)]">
+                <div className="w-20 h-20 rounded-[2rem] bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center shadow-[0_20px_50px_rgba(139,92,246,0.4)]">
                    <Flame size={44} color="white" fill="white" />
                 </div>
                 <div>
                    <h2 className="text-5xl font-black text-white tracking-tighter uppercase italic leading-none">
-                     Roast My <span className="text-orange-500">Code</span>
+                     Roast My <span className="text-cyan-400">Code</span>
                    </h2>
                    <p className="text-lg font-mono text-slate-500 uppercase tracking-[0.3em] font-black mt-2">
                      AI Core Protocol v1.5
@@ -84,7 +84,7 @@ const ShareButton = ({ roast, language, mode = 'savage' }) => {
              </div>
              
              <div className={`px-6 py-3 rounded-2xl border-2 ${
-               mode === 'savage' ? 'bg-orange-500/10 border-orange-500/30 text-orange-400' : 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+               mode === 'savage' ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400'
              } flex items-center gap-3`}>
                 {mode === 'savage' ? <Ghost size={24} /> : <Terminal size={24} />}
                 <span className="text-lg font-black uppercase tracking-[0.2em]">{mode}</span>

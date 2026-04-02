@@ -3,7 +3,7 @@ import Navbar from './Navbar';
 
 export const MainLayout = ({ children, leftPanel, rightPanel, topSection }) => {
   return (
-    <div className="flex flex-col min-h-screen bg-slate-950 font-sans selection:bg-orange-500/30 selection:text-orange-200 overflow-x-hidden">
+    <div className="flex flex-col min-h-screen bg-[radial-gradient(circle_at_top_left,_#1e1b4b,_#0b1020_45%,_#020617_100%)] text-slate-100 selection:bg-violet-500/30 selection:text-violet-200 overflow-x-hidden">
       <Navbar />
       
       <main className="flex-1 w-full max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-10 md:py-20 animate-in fade-in duration-1000">
